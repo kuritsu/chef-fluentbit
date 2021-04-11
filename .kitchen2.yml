@@ -1,6 +1,6 @@
 ---
 driver:
-  name: docker
+  name: dokken
   driver_config:
     use_sudo: false
 

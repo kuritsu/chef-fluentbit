@@ -8,10 +8,18 @@
 package 'gnupg2'
 
 apt_repository 'fluentbit' do
-  uri "https://packages.fluentbit.io/#{node['platform']}/#{node['lsb']['codename']}"
+  uri        "https://packages.fluentbit.io/#{node['platform']}/#{node['lsb']['codename']}"
   components ['main']
-  key 'https://packages.fluentbit.io/fluentbit.key'
-  keyserver false
+  key        'https://packages.fluentbit.io/fluentbit.key'
+  keyserver  false
+  only_if    platform_family?('debian') == 'true'
+end
+
+yum_repository 'fluentbit' do
+  baseurl  'https://packages.fluentbit.io/centos/7/$basearch'
+  gpgcheck true
+  gpgkey   'https://packages.fluentbit.io/fluentbit.key'
+  only_if  platform_family?('amazon', 'rhel') == 'true'
 end
 
 package 'td-agent-bit' do

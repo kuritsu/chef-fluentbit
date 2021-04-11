@@ -8,6 +8,12 @@ node.force_default['fluentbit']['service_name'] = 'fluent-bit'
 node.force_default['fluentbit']['conf_dir'] = '/etc/fluent-bit'
 node.force_default['fluentbit']['lib_dir'] = '/var/lib/fluent-bit'
 
+package 'install_epel' do
+  action       :install
+  package_name 'epel-release'
+  only_if      platform_family?('amazon', 'rhel') == 'true'
+end
+
 remote_file "#{Chef::Config[:file_cache_path]}/#{node['fluentbit']['archive']}" do
   source node['fluentbit']['url']
   checksum node['fluentbit']['checksum']
@@ -22,18 +28,18 @@ end
 # Force update packages before installing
 apt_update 'update' do
   action :nothing
+  only_if platform_family?('debian') == 'true'
 end
 
 package 'install_dependencies' do
   action :nothing
-  package_name node['fluentbit']['dependencies']
+  package_name node['fluentbit']['dependencies'][node['platform_family']]
   notifies :update, 'apt_update[update]', :before
 end
 
 package 'uninstall_dependencies' do
   action :nothing
-  package_name node['fluentbit']['dependencies']
-  options '--auto-remove'
+  package_name node['fluentbit']['dependencies'][node['platform_family']]
   only_if { node['fluentbit']['uninstall_dependencies'] }
 end
 
@@ -46,7 +52,7 @@ bash 'install_fluentbit' do
     set -eux
     tar xf #{node['fluentbit']['archive']}
     cd fluent-bit-#{node['fluentbit']['version']}/build
-    cmake .. #{node['fluentbit']['cmake_flags']}
+    #{node['fluentbit']['cmake_exec'][node['platform_family']]} .. #{node['fluentbit']['cmake_flags']}
     make #{node['fluentbit']['make_flags']}
     install --strip -m 0755 -t #{node['fluentbit']['install_dir']} bin/fluent-bit
   BASH

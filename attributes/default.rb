@@ -5,8 +5,13 @@ default['fluentbit']['checksum'] = 'd5101f31e1aadd5b5df769957651e59d0996df719c1b
 default['fluentbit']['archive'] = "fluent-bit-#{default['fluentbit']['version']}.tar.gz"
 default['fluentbit']['url'] = "https://fluentbit.io/releases/#{default['fluentbit']['version'].split('.')[0..-2].join('.')}/#{default['fluentbit']['archive']}"
 
-default['fluentbit']['dependencies'] = %w(make cmake g++ pkg-config bison flex)
-default['fluentbit']['dependencies'] << 'libsystemd-dev' # required for systemd input plugin
+default['fluentbit']['dependencies']['debian'] = %w(make cmake g++ pkg-config bison flex libsystemd-dev)
+default['fluentbit']['dependencies']['rhel'] = %w(make cmake3 gcc-c++ bison flex systemd-devel postgresql-devel gtest-devel zlib-devel)
+default['fluentbit']['dependencies']['amazon'] = default['fluentbit']['dependencies']['rhel']
+default['fluentbit']['cmake_exec']['debian'] = 'cmake'
+default['fluentbit']['cmake_exec']['rhel'] = 'cmake3'
+default['fluentbit']['cmake_exec']['amazon'] = default['fluentbit']['cmake_exec']['rhel']
+
 default['fluentbit']['uninstall_dependencies'] = true # clean up deps after source installation?
 default['fluentbit']['make_flags'] = '-j $(nproc)'
 default['fluentbit']['cmake_flags'] = '-DFLB_IN_HTTP=no' # https://github.com/fluent/fluent-bit/issues/2930
