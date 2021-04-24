@@ -27,8 +27,11 @@ default['fluentbit']['conf']['Flush'] = 5
 default['fluentbit']['conf']['Daemon'] = 'Off'
 default['fluentbit']['conf']['Log_Level'] = 'info'
 
+default['fluentbit']['forward']['enabled'] = false
 default['fluentbit']['forward']['host'] = '' # required
 default['fluentbit']['forward']['port'] = 24_224
 default['fluentbit']['forward']['self_hostname'] = 'localhost'
 default['fluentbit']['forward']['shared_key'] = '' # required
 default['fluentbit']['forward']['tag_prefix'] = '' # optional
+
+default['fluentbit']['mail']['enabled'] = false
